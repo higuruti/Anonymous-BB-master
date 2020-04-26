@@ -3,7 +3,7 @@
   document.getElementById("ajaxButton").onclick = function() {
     var userName = document.getElementById("ajaxTextbox").value;
     var message = document.getElementById("ajaxTextarea").value;
-    var data = `${userName}\n${message}`;
+    var data = `${userName}\t${message}`;
     makeRequest("back.php", data);
   };
 
@@ -25,12 +25,13 @@
       if (httpRequest.readyState === XMLHttpRequest.DONE) {
         if (httpRequest.status === 200) {
           var response = JSON.parse(httpRequest.responseText);
-          let paraDate = document.createElement("pre");
-          let paraName = document.createElement("pre");
-          paraDate.textContent = response.date;
-          paraName.textContent = response.data;
-          document.body.appendChild(paraDate);
-          document.body.appendChild(paraName);
+          let paraDates = document.createElement("p");
+          let paraMsg = document.createElement("p");
+          paraDates.textContent = response.name + ':' + response.date;
+          paraMsg.textContent = response.message;
+          document.body.appendChild(paraDates);
+          document.body.appendChild(paraMsg);
+          document.getElementById("ajaxTextarea").value = "";
         } else {
           alert('リクエストに問題が発生しました\n' +  httpRequest.status +"\n" + httpRequest.readyState);
         }

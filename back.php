@@ -2,17 +2,30 @@
 
 $ary_lists = [];
 $resp = $_POST['data'];
+$escIdx = mb_strpos($resp, "\t");
+$name = mb_substr($resp, 0, $escIdx);
+if ($name == "") {
+    $name = "名無しさん";
+}
+$message = mb_substr($resp, $escIdx + 1, strlen($resp));
 $ary_lists = [
     "date" => date('Y/m/d H:i:s'),
     "data" => $resp,
+    "name" => $name,
+    "message" => $message,
 ];
-
-// 名前とメッセージを分割したい(タグ分け、名前空欄判定したい)
-//   -> formDataを使う？うまくいっていないが…
 
 // ログ書き込みしようとしたらエラーする…
 
-// $filename = chmod('chat.log', 606);
+// $num = 0;
+// if (is_file("chat.log")) {
+//     $logs = explode(PHP_EOL, file_get_contents("chat.log"));
+//     $num = count($logs);
+// }
+// file_put_contents("chat.log", $num . "," . $ary_lists['date'] . str_replace("\t", ",", $resp) . PHP_EOL, FILE_APPEND);
+
+
+// $filename = chmod('./chat.log', 606);
 // $file = fopen(filename, 'a');
 // flock($file, LOCK_EX);
 // // fwrite($file, implode("\t", $ary_lists)."\n");
