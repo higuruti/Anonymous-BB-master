@@ -4,7 +4,7 @@
     var userName = document.getElementById("ajaxTextbox").value;
     var message = document.getElementById("ajaxTextarea").value;
     var data = `${userName}\n${message}`;
-    makeRequest("test.php", data);
+    makeRequest("back.php", data);
   };
 
   function makeRequest(url, data) {
