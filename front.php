@@ -3,26 +3,18 @@
     <head>
         <title>チャット</title>
         <meta charset="UTF-8">
+        <script src="common.js" defer></script>
     </head>
     <body>
-        <form method="post" action="back.php">
+        <!-- formを使ったら謎エラーっぽい -->
+        <!-- <form method="POST" id="f1"> -->
             <p>ニックネーム</p>
-            <input type="text" name="name"><br/>
+            <input type="text" name="name" id="ajaxTextbox">
+            <br>
             <p>メッセージ</p>
-            <textarea name="message" rows="10" cols="60"></textarea><br/>
-            <input type="submit" balue="送信">
-        </form>
-        <?php
-        
-       $file=file('chat.log');
-       foreach($file as $chat_line){
-            $line=explode("\t", $chat_line);
-            foreach($line as $value){
-                print $value.'<br/>';
-            }
-            print '<br/>';
-       }
-
-        ?>
+            <textarea name="message" id="ajaxTextarea" rows="10" cols="60"></textarea>
+            <br>
+            <input type="submit" value="送信" id="ajaxButton">
+        <!-- </form> -->
     </body>
 </html>
