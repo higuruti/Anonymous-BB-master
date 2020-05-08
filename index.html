@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+    </head>
+    <body>
+        <form name="myform">
+            <input name="text" type="text">
+            <button name="btn">送信</button>
+        </form>
+        <hr>
+        <ul id="message"></ul>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+        <script>
+            var socket = io();
+            var message = document.getElementById('message');
+            var form = document.forms.myform;
+
+            form.btn.addEventListener('click', function(e){
+                e.preventDefault();
+                socket.emit('chat', form.text.value);
+                form.text.value='';
+            });
+
+            socket.on('chat', function(msg){
+                var li = document.createElement('li');
+
+                li.textContent = msg;
+                message.appendChild(li);
+            });
+        </script>
+    </body>
+</html>
