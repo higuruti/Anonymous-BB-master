@@ -26,6 +26,8 @@
             socket.on('chat', function(msg){
                 var li = document.createElement('li');
 
+                console.log('hello');
+
                 li.textContent = msg;
                 message.appendChild(li);
             });

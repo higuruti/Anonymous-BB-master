@@ -38,17 +38,15 @@ app.get('/', function(request, response){
   if(request.session.login == null){
     response.redirect('/login');
   }else{
-    response.render('index.ejs',{});
-
-    io.on('connection', function(socket){
-      socket.on('chat', function(msg){
-        io.emit('chat', msg);
-      });
-    });
+    response.render('index.ejs',{});  
   }
- 
 });
 
+io.on('connection', function(socket){
+  socket.on('chat', function(msg){
+    io.emit('chat', msg);
+  });
+});
 
 // -----------------ユーザーのログイン処理--------------------
 app.get('/login', function(request, response){
