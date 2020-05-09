@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var ejs = require('ejs');
 var mysql = require('mysql');
 var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
 var session = require('express-session');
 var knex = require('knex')({
   dialect: 'mysql',
@@ -39,7 +40,6 @@ app.get('/', function(request, response){
   }else{
     response.render('index.ejs',{});
 
-    var io = require('socket.io').listen(server);
     io.on('connection', function(socket){
       socket.on('chat', function(msg){
         io.emit('chat', msg);
