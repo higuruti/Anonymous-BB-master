@@ -30,8 +30,12 @@ var knex = require('knex')({
 // 上記で設定したデータベースのテーブルをモデル化とか書いてあるけどよくわからん。
 // Bookshelfを使うためには必要。
 var Bookshelf = require('bookshelf')(knex);
+
 var Users = Bookshelf.Model.extend({
   tableName: 'users'
+});
+var Message = Bookshelf.Model.extend({
+  tableName:  'chat_contents',
 });
 
 // セッション管理をするための設定
@@ -58,14 +62,24 @@ app.get('/', function(request, response){
     response.redirect('/login');
   }else{
     // ログインしていた場合chatの画面に行く
-    response.render('index.ejs',{});  
+    new Message().fetchAll().then((collection)=>{
+      var data = {
+        title: 'Open chat',
+        content: collection.toArray()
+      };
+      response.render('index.ejs', data);  
+    }).catch((err)=>{
+      response.status(500).json({error: true, data: {message: err.message}});
+    });
   }
 });
 
 //websocket での通信の処理
 io.on('connection', function(socket){
   socket.on('chat', function(msg){
-    io.emit('chat', msg);
+    new Message({message: msg}).save().then((model)=>{
+      io.emit('chat', msg);
+    });
   });
 });
 
@@ -90,6 +104,7 @@ app.post('/login', function(request, response){
       // 存在した場合、セッション管理をしている変数にユーザーのデータを入れてる。
       // ここら辺もう少し調べとく
       request.session.login = model.attributes;
+      console.log(userName+' is login');
       // /でリダイレクト　チャット画面に移行
       response.redirect('/');
     }
@@ -98,5 +113,5 @@ app.post('/login', function(request, response){
 });
 
 // ポート番号3000で待ち状態
-server.listen(3000);
+server.listen(3000, ()=>{console.log('Server is start on port 3000')});
 
