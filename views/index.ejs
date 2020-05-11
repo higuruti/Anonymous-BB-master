@@ -6,18 +6,18 @@
     </head>
     <body>
         <h1><%= title %></h1>
-        <form name="myform">
-            <input name="text" type="text">
-            <button name="btn">送信</button>
-        </form>
         <hr>
         <ul id="message">
             <% for(var i in content){ %>
                 <% var obj = content[i].attributes; %>
                 <li><%= obj.message %></li>
-            <% } %>
-        </ul>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+                <% } %>
+            </ul>
+            <form name="myform">
+                <input name="text" type="text">
+                <button name="btn">送信</button>
+            </form>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
         <script>
             // クライアントからサーバへ接続要求
             var socket = io();

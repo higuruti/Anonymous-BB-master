@@ -77,7 +77,9 @@ app.get('/', function(request, response){
 //websocket での通信の処理
 io.on('connection', function(socket){
   socket.on('chat', function(msg){
+    // 送信されたメッセージをデータベースに追加
     new Message({message: msg}).save().then((model)=>{
+      // ほかのつながってるユーザーにメッセージを送信
       io.emit('chat', msg);
     });
   });
@@ -97,17 +99,15 @@ app.post('/login', function(request, response){
 
   // データベースに接続して送られてきたアカウントが存在するか調べる
   Users.query({where: {name: userName}, andWhere: {password: password}}).fetch().then((model)=>{
-    if(model == null){
-      // 間違ったログイン名とパスワードを入力するとエラー発生　原因不明
-      response.render('login.ejs', {});
-    }else{
-      // 存在した場合、セッション管理をしている変数にユーザーのデータを入れてる。
+  
+    // 存在した場合、セッション管理をしている変数にユーザーのデータを入れてる。
       // ここら辺もう少し調べとく
       request.session.login = model.attributes;
       console.log(userName+' is login');
       // /でリダイレクト　チャット画面に移行
       response.redirect('/');
-    }
+  }).catch((err)=>{
+    response.render('login.ejs',{});
   })
 
 });
