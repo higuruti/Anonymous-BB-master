@@ -1,6 +1,5 @@
 // 必要なモジュールを取り込んでいる
 
-
 var express = require('express');
 // expressのインスタンス化
 var app = express();
@@ -16,6 +15,8 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 // セッション管理をするためのモジュール
 var session = require('express-session');
+// express-validatorを用いるためのモジュール
+var { check, validationResult} = require('express-validator');
 // SQL文を解析するためのモジュールとその設定をしている
 var knex = require('knex')({
   dialect: 'mysql',
@@ -30,13 +31,13 @@ var knex = require('knex')({
 // 上記で設定したデータベースのテーブルをモデル化とか書いてあるけどよくわからん。
 // Bookshelfを使うためには必要。
 var Bookshelf = require('bookshelf')(knex);
-
 var Users = Bookshelf.Model.extend({
   tableName: 'users'
 });
 var Message = Bookshelf.Model.extend({
   tableName:  'chat_contents',
 });
+
 
 // セッション管理をするための設定
 var session_opt = {
@@ -56,7 +57,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 // ---------------メッセージ--------------------
 // urlが/で、メソッドがgetの時の動き
-app.get('/', function(request, response){
+app.get('/chat', function(request, response){
   // ログインしていなかった場合ログイン画面に飛ばす
   if(request.session.login == null){
     response.redirect('/login');
@@ -85,10 +86,57 @@ io.on('connection', function(socket){
   });
 });
 
+// ----------------アカウントの新規作成-----------------------
+
+app.get('/new', function(reqest, response){
+  var data = {
+    title: 'アカウントの新規作成を行います。ログイン名とパスワードの入力をしてください',
+    destination: '/new',
+    btn_value: '作成'
+  };
+  response.render('login.ejs', data);
+})
+
+app.post('/new',[
+  // 入力のチェックする項目を設定
+  check('name').notEmpty().withMessage('ログイン名を入力してください'),
+  check('password', '五文字以上のパスワードは必ず入力してください').isLength({min: 5})
+], function(request, response){
+  // エラーがあるかどうかの判定。あった場合errorにエラーメッセージが入る
+  const error = validationResult(request);
+  // エラー定数に中身があるかどうかチェック
+  if(!error.isEmpty()){
+    // あった場合
+    var error_title = '<ul>';
+    var error_result_arr = error.array();
+    for(var n in error_result_arr){
+      error_title += '<li>' + error_result_arr[n].msg + '</li>';
+    }
+    error_title += '</ul>';
+    var data = {
+      title: error_title,
+      destination: '/new',
+      btn_value: '作成'
+    };
+    response.render('login.ejs', data);
+  }else{
+    // ない場合
+    new Users(request.body).save().then((model)=>{
+      request.session.login = model.attributes;
+      response.redirect('/chat');
+    });
+  }
+});
+
 // -----------------ユーザーのログイン処理--------------------
 // ログイン画面
 app.get('/login', function(request, response){
-  response.render('login.ejs', {});
+  var data = {
+    title: 'ログイン名とパスワードを入力してください',
+    destination: '/login',
+    btn_value: 'ログイン'
+  };
+  response.render('login.ejs', data);
 });
 
 // 名前とパスワードが送られてきたときの処理
@@ -103,11 +151,17 @@ app.post('/login', function(request, response){
     // 存在した場合、セッション管理をしている変数にユーザーのデータを入れてる。
       // ここら辺もう少し調べとく
       request.session.login = model.attributes;
+      console.log(request.session.login);
       console.log(userName+' is login');
       // /でリダイレクト　チャット画面に移行
-      response.redirect('/');
+      response.redirect('/chat');
   }).catch((err)=>{
-    response.render('login.ejs',{});
+    var data = {
+      title: 'ログイン名もしくはパスワードが間違っています。再入力してください',
+      destination:  '/login',
+      btn_value: 'ログイン'
+    };
+    response.render('login.ejs', data);
   })
 
 });

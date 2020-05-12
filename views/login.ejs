@@ -4,11 +4,12 @@
         <meta charset="UTF-8">
     </head>
     <body>
-        <p>ログイン名とパスワードを入力してください</p>
-        <form method="post" action="/login">
+        <a href="/new">アカウント新規作成</a>
+        <p><%- title %></p>
+        <form method="post" action="<%= destination %>">
             <input type="text" name="name" placeholder="name">
             <input type="password" name="password" placeholder="password">
-            <input type="submit" value="ログイン">
+            <input type="submit" value="<%= btn_value %>">
         </form>
     </body>
 </html>
