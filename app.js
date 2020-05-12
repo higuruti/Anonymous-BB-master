@@ -88,7 +88,10 @@ io.on('connection', function(socket){
 // -----------------ユーザーのログイン処理--------------------
 // ログイン画面
 app.get('/login', function(request, response){
-  response.render('login.ejs', {});
+  var data = {
+    title: 'ログイン名とパスワードを入力してください'
+  };
+  response.render('login.ejs', data);
 });
 
 // 名前とパスワードが送られてきたときの処理
@@ -107,7 +110,10 @@ app.post('/login', function(request, response){
       // /でリダイレクト　チャット画面に移行
       response.redirect('/');
   }).catch((err)=>{
-    response.render('login.ejs',{});
+    var data = {
+      title: 'ログイン名もしくはパスワードが間違っています'
+    };
+    response.render('login.ejs', data);
   })
 
 });
