@@ -1,24 +1,23 @@
 // 必要なモジュールを取り込んでいる
-
-var express = require('express');
+const express = require('express');
 // expressのインスタンス化
-var app = express();
+const app = express();
 // postの中身を取得するためのモジュール
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 // ejsファイルという、htmlファイルを動的に変化させるためのモジュール
-var ejs = require('ejs');
+const ejs = require('ejs');
 // mysqlを扱うためのモジュール
-var mysql = require('mysql');
+const mysql = require('mysql');
 // httpサーバーを作っている
-var server = require('http').createServer(app);
+const server = require('http').createServer(app);
 // websocket通信をするためのモジュールを取り込みインスタンス化
-var io = require('socket.io').listen(server);
+const io = require('socket.io').listen(server);
 // セッション管理をするためのモジュール
-var session = require('express-session');
+const session = require('express-session');
 // express-validatorを用いるためのモジュール
-var { check, validationResult} = require('express-validator');
+const { check, validationResult} = require('express-validator');
 // SQL文を解析するためのモジュールとその設定をしている
-var knex = require('knex')({
+const knex = require('knex')({
   dialect: 'mysql',
   connection: {
     host: 'localhost',
@@ -30,17 +29,17 @@ var knex = require('knex')({
 });
 // 上記で設定したデータベースのテーブルをモデル化とか書いてあるけどよくわからん。
 // Bookshelfを使うためには必要。
-var Bookshelf = require('bookshelf')(knex);
-var Users = Bookshelf.Model.extend({
+const Bookshelf = require('bookshelf')(knex);
+const Users = Bookshelf.Model.extend({
   tableName: 'users'
 });
-var Message = Bookshelf.Model.extend({
+const Message = Bookshelf.Model.extend({
   tableName:  'chat_contents',
 });
 
 
 // セッション管理をするための設定
-var session_opt = {
+const session_opt = {
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: false,
@@ -54,6 +53,8 @@ app.engine('ejs', ejs.renderFile);
 // postの内容を取得するために必要。とにかく必要なんだ
 app.use(bodyParser.urlencoded({extended: false}));
 
+app.use(express.static('public'));
+
 
 // ---------------メッセージ--------------------
 // urlが/で、メソッドがgetの時の動き
@@ -64,7 +65,7 @@ app.get('/chat', function(request, response){
   }else{
     // ログインしていた場合chatの画面に行く
     new Message().fetchAll().then((collection)=>{
-      var data = {
+      let data = {
         title: 'Open chat',
         content: collection.toArray()
       };
@@ -89,7 +90,7 @@ io.on('connection', function(socket){
 // ----------------アカウントの新規作成-----------------------
 
 app.get('/new', function(reqest, response){
-  var data = {
+  let data = {
     title: 'アカウントの新規作成を行います。ログイン名とパスワードの入力をしてください',
     destination: '/new',
     btn_value: '作成'
@@ -107,13 +108,13 @@ app.post('/new',[
   // エラー定数に中身があるかどうかチェック
   if(!error.isEmpty()){
     // あった場合
-    var error_title = '<ul>';
-    var error_result_arr = error.array();
+    let error_title = '<ul>';
+    let error_result_arr = error.array();
     for(var n in error_result_arr){
       error_title += '<li>' + error_result_arr[n].msg + '</li>';
     }
     error_title += '</ul>';
-    var data = {
+    let data = {
       title: error_title,
       destination: '/new',
       btn_value: '作成'
@@ -131,7 +132,7 @@ app.post('/new',[
 // -----------------ユーザーのログイン処理--------------------
 // ログイン画面
 app.get('/login', function(request, response){
-  var data = {
+  let data = {
     title: 'ログイン名とパスワードを入力してください',
     destination: '/login',
     btn_value: 'ログイン'
@@ -142,8 +143,8 @@ app.get('/login', function(request, response){
 // 名前とパスワードが送られてきたときの処理
 app.post('/login', function(request, response){
   // userName、password変数に送られてきたユーザー名、名前を入れる
-  var userName = request.body.name;
-  var password = request.body.password;
+  let userName = request.body.name;
+  let password = request.body.password;
 
   // データベースに接続して送られてきたアカウントが存在するか調べる
   Users.query({where: {name: userName}, andWhere: {password: password}}).fetch().then((model)=>{
@@ -156,14 +157,13 @@ app.post('/login', function(request, response){
       // /でリダイレクト　チャット画面に移行
       response.redirect('/chat');
   }).catch((err)=>{
-    var data = {
+    let data = {
       title: 'ログイン名もしくはパスワードが間違っています。再入力してください',
       destination:  '/login',
       btn_value: 'ログイン'
     };
     response.render('login.ejs', data);
-  })
-
+  });
 });
 
 // ポート番号3000で待ち状態
