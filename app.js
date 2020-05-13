@@ -53,7 +53,7 @@ app.use(session(session_opt));
 app.engine('ejs', ejs.renderFile);
 // postの内容を取得するために必要。とにかく必要なんだ
 app.use(bodyParser.urlencoded({extended: false}));
-
+app.use(express.static('public'));
 
 // ---------------メッセージ--------------------
 // urlが/で、メソッドがgetの時の動き
