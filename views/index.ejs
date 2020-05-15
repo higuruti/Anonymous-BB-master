@@ -3,21 +3,21 @@
     <head>
         <meta charset="UTF-8">
         <!-- <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css"> -->
-        <link type="text/css" href="./style.css" rel="stylesheet">
+        <link type="text/css" href="./main_style.css" rel="stylesheet">
     </head>
     <body>
         <h1><%= title %></h1>
-        <hr>
+        <!-- <hr> -->
         <ul id="message">
             <% for(var i in content){ %>
                 <% var obj = content[i].attributes; %>
                 <li><%= obj.message %></li>
-                <% } %>
-            </ul>
-            <form name="myform">
-                <input name="text" type="text">
-                <button name="btn">送信</button>
-            </form>
+            <% } %>
+        </ul>
+        <form name="myform">
+            <textarea name="text" type="text"></textarea>
+            <button name="btn" disabled>送信</button>
+        </form>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
         <script>
             // クライアントからサーバへ接続要求
@@ -29,6 +29,7 @@
                 e.preventDefault();
                 socket.emit('chat', form.text.value);
                 form.text.value='';
+                form.btn.disabled = 1;
             });
 
             socket.on('chat', function(msg){
@@ -36,7 +37,20 @@
 
                 li.textContent = msg;
                 message.appendChild(li);
+
+                // reload
+                messageBox = document.getElementById("message");
+                messageLists = messageBox.getElementsByTagName("li");
+                lastMessage = messageLists[messageLists.length - 1];
+                lastMessageY += lastMessage.clientHeight;
+
+                // new message scroll
+                if (textareaElement.getBoundingClientRect().top > lastMessage.getBoundingClientRect().top) {
+                    let scrollPadding = lastMessage.clientHeight + 10; //この10は微調整。多分メッセージ上下の空白
+                    messageBox.scrollBy({left: 0, top: scrollPadding, behavior: "smooth"});
+                }
             });
         </script>
+        <script src="./common.js"></script>
     </body>
 </html>

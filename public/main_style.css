@@ -1,0 +1,84 @@
+
+/* ---------------------
+        index.ejs
+------------------------ */
+
+
+body {
+    display: grid;
+    grid-template-rows: 10vh 75vh 10vh;
+    grid-template-columns: 1fr;
+}
+h1 {
+    grid-row: 1;
+    margin: 0;
+}
+#message {
+    grid-row: 2;
+    height: 70vh;
+    overflow: hidden;
+    overflow-y: scroll;
+    margin: 0;
+    padding: 0;
+    border: 3px dashed greenyellow;
+    border-radius: 20px 20px 20px 20px;
+}
+#message > li {
+    margin: 5px;
+    background-color: rgb(225, 255, 232);
+    border: 2px solid rgb(130, 238, 166);
+    overflow-wrap: break-word;
+    
+}
+li {
+    position:relative;
+	display: block;
+	padding: 5px 0px 5px 30px;
+	background: #ccc;
+	color: #444;
+	border-radius:15px 0px 0px 15px;
+}
+li::after {
+    content:'';
+	display:block; 
+	position:absolute;
+	width:14px;
+	height: 14px;
+	top:10px;
+	left:5px;
+	background: rgb(255, 184, 184);
+	border-radius: 10px;
+}
+form[name="myform"] {
+    grid-row: 3;
+    display: flex;
+    margin: 0 50px;
+    min-width: 50vw;
+    height: 40px;
+    border: 1px solid gray;
+    border-radius: 5px;
+}
+form[name="myform"]:focus-within {
+    border-color: blueviolet;
+}
+textarea[name="text"] {
+    width: 90vw;
+    min-width: 45vw;
+    height: auto;
+    resize: none;
+    border: none;
+    outline: none;
+}
+button[name="btn"] {
+    width: 10vw;
+    min-width: 5vw;
+    margin: 10px 10px;
+    padding: 0;
+    clear: both;
+    font-weight: bold;
+    color: white;
+    background-color: yellowgreen;
+    border: 1px solid yellowgreen;
+    border-radius: 0 5px 5px 0;
+    margin: 0;
+}

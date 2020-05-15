@@ -18,7 +18,7 @@ const session = require('express-session');
 const { check, validationResult} = require('express-validator');
 // SQL文を解析するためのモジュールとその設定をしている
 const knex = require('knex')({
-  dialect: 'mysql',
+  client: 'mysql',
   connection: {
     host: 'localhost',
     user: 'root',
@@ -52,7 +52,7 @@ app.use(session(session_opt));
 app.engine('ejs', ejs.renderFile);
 // postの内容を取得するために必要。とにかく必要なんだ
 app.use(bodyParser.urlencoded({extended: false}));
-
+// 静的ファイルの認識
 app.use(express.static('public'));
 
 
