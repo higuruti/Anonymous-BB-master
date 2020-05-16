@@ -1,5 +1,4 @@
 // 必要なモジュールを取り込んでいる
-
 const express = require('express');
 // expressのインスタンス化
 const app = express();
@@ -225,8 +224,7 @@ app.post('/login', function(request, response){
       btn_value: 'ログイン'
     };
     response.render('login.ejs', data);
-  })
-
+  });
 });
 
 // ポート番号3000で待ち状態
