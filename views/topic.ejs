@@ -6,14 +6,13 @@
     </head>
     <body>
         <div><%= error %></div>
-        <ul id="topic">
+
+        <form method="post" action="/topic">
             <% for(var i in content){ %>
                 <% var obj = content[i].attributes; %>
-                <li><%= obj.topic %></li>
+                <input type="radio" name="topic" value="<%= obj.topic %>"><%= obj.topic %><br/>
             <% } %>
-        </ul>
-        <form method="post" action="/topic">
-           <input type="text" name="topic" placeholder="トピック選択"> 
+            <input type="submit" value="選択">
         </form>
     </body>
 </html>
