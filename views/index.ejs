@@ -15,7 +15,7 @@
             <% } %>
         </ul>
         <form name="myform">
-            <textarea name="text" type="text"></textarea>
+            <textarea name="text" id="text" type="text"></textarea>
             <button name="btn" disabled>送信</button>
         </form>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
@@ -28,7 +28,6 @@
             form.btn.addEventListener('click', function(e){
                 var send_message = document.getElementById('text').value;
                 console.log(send_message)
-                // document.getElementById('text').value='';
                 e.preventDefault();
                 socket.emit('chat', send_message);
                 form.text.value='';

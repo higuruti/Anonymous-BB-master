@@ -78,7 +78,7 @@ app.get('/chat', function(request, response){
     // ログインしていた場合chatの画面に行く
     new Message().fetchAll().then((collection)=>{
       let data = {
-        title: 'Open chat',
+        title: topic+'へようこそ'+request.session.login.name+'さん',
         content: collection.toArray()
       };
       response.render('index.ejs', data);  
@@ -93,16 +93,14 @@ app.get('/chat', function(request, response){
 io.sockets.on('connection', function(socket){
   let room= socket.request.session.room;
   socket.join(room);
-  console.log(room);
   socket.on('chat', function(data){
     const Message = Bookshelf.Model.extend({
       tableName: room
     });
     // 送信されたメッセージをデータベースに追加
-    new Message({message: data.msg}).save().then((model)=>{
+    new Message({message: data}).save().then((model)=>{
       // ほかのつながってるユーザーにメッセージを送信
-      console.log(data);
-      io.sockets.in(room).emit('chat',data.msg);
+      io.sockets.in(room).emit('chat',data);
     });
   });
 });
