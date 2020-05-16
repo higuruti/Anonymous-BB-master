@@ -27,6 +27,7 @@
             
             form.btn.addEventListener('click', function(e){
                 var send_message = document.getElementById('text').value;
+                console.log(send_message)
                 // document.getElementById('text').value='';
                 e.preventDefault();
                 socket.emit('chat', send_message);

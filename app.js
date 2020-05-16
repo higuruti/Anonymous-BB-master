@@ -69,7 +69,7 @@ app.get('/chat', function(request, response){
     response.redirect('/login');
   }else{
     let topic = request.query.topic;
-    request.session.login.room = topic;
+    request.session.room = topic;
     // console.log(request.session.login.room);
     const Message = Bookshelf.Model.extend({
       tableName:  topic,
@@ -91,18 +91,18 @@ app.get('/chat', function(request, response){
 // -----------------websocket での通信の処理-------------------
 
 io.sockets.on('connection', function(socket){
-  let room= socket.request.session.login.room;
+  let room= socket.request.session.room;
   socket.join(room);
   console.log(room);
   socket.on('chat', function(data){
     const Message = Bookshelf.Model.extend({
-      tableName: room,
+      tableName: room
     });
     // 送信されたメッセージをデータベースに追加
     new Message({message: data.msg}).save().then((model)=>{
       // ほかのつながってるユーザーにメッセージを送信
       console.log(data);
-      io.to(room).emit('chat',data.msg);
+      io.sockets.in(room).emit('chat',data.msg);
     });
   });
 });
