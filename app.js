@@ -27,7 +27,7 @@ const knex = require('knex')({
     charset: 'utf8'
   }
 });
-// 上記で設定したデータベースのテーブルをモデル化とか書いてあるけどよくわからん。
+// 上記で設定したデータベースのテーブルをモデル化
 // Bookshelfを使うためには必要。
 const Bookshelf = require('bookshelf')(knex);
 const Users = Bookshelf.Model.extend({
@@ -41,19 +41,24 @@ const Topic = Bookshelf.Model.extend({
 });
 
 // セッション管理をするための設定
-const session_opt = {
+const sessionMiddleware = session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: false,
   cookie: {maxAge:60*60*1000}
-};
-// セッション管理するためには必要な文。よくわからん
-app.use(session(session_opt));
+});
+// セッション管理するためには必要な文。
+
+app.use(sessionMiddleware);
+io.use(function(socket, next){
+  sessionMiddleware(socket.request, socket.request.res, next);
+})
 
 // ejsファイルを使うためのエンジンを設定。
 app.engine('ejs', ejs.renderFile);
-// postの内容を取得するために必要。とにかく必要なんだ
+// postを使うための分
 app.use(bodyParser.urlencoded({extended: false}));
+// publicに静的ファイルを入れる
 app.use(express.static('public'));
 
 // ---------------メッセージ--------------------
@@ -83,10 +88,10 @@ app.get('/chat', function(request, response){
   }
 });
 
-//websocket での通信の処理
+// -----------------websocket での通信の処理-------------------
+
 io.sockets.on('connection', function(socket){
-  // let room= socket.request.session.login.room;
-  let room='game'
+  let room= socket.request.session.login.room;
   socket.join(room);
   console.log(room);
   socket.on('chat', function(data){
@@ -227,6 +232,6 @@ app.post('/login', function(request, response){
   });
 });
 
-// ポート番号3000で待ち状態
+// ポート番号3000で待ち状態------------------------
 server.listen(3000, ()=>{console.log('Server is start on port 3000')});
 
