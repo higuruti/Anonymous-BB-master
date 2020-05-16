@@ -1,24 +1,24 @@
 // 必要なモジュールを取り込んでいる
 
-var express = require('express');
+const express = require('express');
 // expressのインスタンス化
-var app = express();
+const app = express();
 // postの中身を取得するためのモジュール
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 // ejsファイルという、htmlファイルを動的に変化させるためのモジュール
-var ejs = require('ejs');
+const ejs = require('ejs');
 // mysqlを扱うためのモジュール
-var mysql = require('mysql');
+const mysql = require('mysql');
 // httpサーバーを作っている
-var server = require('http').createServer(app);
+const server = require('http').createServer(app);
 // websocket通信をするためのモジュールを取り込みインスタンス化
-var io = require('socket.io').listen(server);
+const io = require('socket.io').listen(server);
 // セッション管理をするためのモジュール
-var session = require('express-session');
+const session = require('express-session');
 // express-validatorを用いるためのモジュール
-var { check, validationResult} = require('express-validator');
+const { check, validationResult} = require('express-validator');
 // SQL文を解析するためのモジュールとその設定をしている
-var knex = require('knex')({
+const knex = require('knex')({
   dialect: 'mysql',
   connection: {
     host: 'localhost',
@@ -30,17 +30,19 @@ var knex = require('knex')({
 });
 // 上記で設定したデータベースのテーブルをモデル化とか書いてあるけどよくわからん。
 // Bookshelfを使うためには必要。
-var Bookshelf = require('bookshelf')(knex);
-var Users = Bookshelf.Model.extend({
+const Bookshelf = require('bookshelf')(knex);
+const Users = Bookshelf.Model.extend({
   tableName: 'users'
 });
-var Message = Bookshelf.Model.extend({
-  tableName:  'chat_contents',
+// const Message = Bookshelf.Model.extend({
+//   tableName:  'chat_contents',
+// });
+const Topic = Bookshelf.Model.extend({
+  tableName: 'topic',
 });
 
-
 // セッション管理をするための設定
-var session_opt = {
+const session_opt = {
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: false,
@@ -62,9 +64,16 @@ app.get('/chat', function(request, response){
   if(request.session.login == null){
     response.redirect('/login');
   }else{
+    let topic = request.query.topic;
+    request.session.login.room = topic;
+    // console.log(request.session.login.room);
+    const Message = Bookshelf.Model.extend({
+      tableName:  topic,
+    });
+
     // ログインしていた場合chatの画面に行く
     new Message().fetchAll().then((collection)=>{
-      var data = {
+      let data = {
         title: 'Open chat',
         content: collection.toArray()
       };
@@ -76,26 +85,80 @@ app.get('/chat', function(request, response){
 });
 
 //websocket での通信の処理
-io.on('connection', function(socket){
-  socket.on('chat', function(msg){
+io.sockets.on('connection', function(socket){
+  // let room= socket.request.session.login.room;
+  let room='game'
+  socket.join(room);
+  console.log(room);
+  socket.on('chat', function(data){
+    const Message = Bookshelf.Model.extend({
+      tableName: room,
+    });
     // 送信されたメッセージをデータベースに追加
-    new Message({message: msg}).save().then((model)=>{
+    new Message({message: data.msg}).save().then((model)=>{
       // ほかのつながってるユーザーにメッセージを送信
-      io.emit('chat', msg);
+      console.log(data);
+      io.to(room).emit('chat',data.msg);
     });
   });
 });
 
+// ---------------トピック選択-------------------------------
+
+app.get('/topic', function(request, response){
+  if(request.session.login==null){
+    response.redirect('login.ejs');
+  }else{
+    new Topic().fetchAll().then((collection)=>{
+      let data = {
+        error: '',
+        content: collection.toArray()
+      };
+      response.render('topic.ejs', data);
+    });
+  }
+});
+
+app.post('/topic', [
+  check('topic').notEmpty().withMessage('トピックを選択してください')
+], function(request, response){
+  const error = validationResult(request);
+  if(!error.isEmpty()){
+    let error_title = '<ul>';
+    let error_arr = error.array();
+    for(let n in error_arr){
+      error_title += '<li>' + error_arr[n].msg + '</li>';
+    }
+    error_title += '</ul>';
+    response.render('topic.ejs', {error: error_title});
+  }else{
+    let topic = request.body.topic;
+    Topic.query({where: {topic: topic}})
+    .fetch()
+    .then((model)=>{
+      response.redirect('/chat?topic='+topic);
+    }).catch((err)=>{
+      new Topic().fetchAll().then((collection)=>{
+        let data = {
+          error: 'そのようなトピックは存在しません',
+          content: collection.toArray()
+        };
+        response.render('topic.ejs', data);
+      });
+    });
+  }
+})
+
 // ----------------アカウントの新規作成-----------------------
 
 app.get('/new', function(reqest, response){
-  var data = {
+  let data = {
     title: 'アカウントの新規作成を行います。ログイン名とパスワードの入力をしてください',
     destination: '/new',
     btn_value: '作成'
   };
   response.render('login.ejs', data);
-})
+});
 
 app.post('/new',[
   // 入力のチェックする項目を設定
@@ -107,13 +170,13 @@ app.post('/new',[
   // エラー定数に中身があるかどうかチェック
   if(!error.isEmpty()){
     // あった場合
-    var error_title = '<ul>';
-    var error_result_arr = error.array();
-    for(var n in error_result_arr){
+    let error_title = '<ul>';
+    let error_result_arr = error.array();
+    for(let n in error_result_arr){
       error_title += '<li>' + error_result_arr[n].msg + '</li>';
     }
     error_title += '</ul>';
-    var data = {
+    let data = {
       title: error_title,
       destination: '/new',
       btn_value: '作成'
@@ -123,7 +186,7 @@ app.post('/new',[
     // ない場合
     new Users(request.body).save().then((model)=>{
       request.session.login = model.attributes;
-      response.redirect('/chat');
+      response.redirect('/topic');
     });
   }
 });
@@ -131,7 +194,7 @@ app.post('/new',[
 // -----------------ユーザーのログイン処理--------------------
 // ログイン画面
 app.get('/login', function(request, response){
-  var data = {
+  let data = {
     title: 'ログイン名とパスワードを入力してください',
     destination: '/login',
     btn_value: 'ログイン'
@@ -142,8 +205,8 @@ app.get('/login', function(request, response){
 // 名前とパスワードが送られてきたときの処理
 app.post('/login', function(request, response){
   // userName、password変数に送られてきたユーザー名、名前を入れる
-  var userName = request.body.name;
-  var password = request.body.password;
+  let userName = request.body.name;
+  let password = request.body.password;
 
   // データベースに接続して送られてきたアカウントが存在するか調べる
   Users.query({where: {name: userName}, andWhere: {password: password}}).fetch().then((model)=>{
@@ -151,12 +214,12 @@ app.post('/login', function(request, response){
     // 存在した場合、セッション管理をしている変数にユーザーのデータを入れてる。
       // ここら辺もう少し調べとく
       request.session.login = model.attributes;
-      console.log(request.session.login);
+      // console.log(request.session.login);
       console.log(userName+' is login');
       // /でリダイレクト　チャット画面に移行
-      response.redirect('/chat');
+      response.redirect('/topic');
   }).catch((err)=>{
-    var data = {
+    let data = {
       title: 'ログイン名もしくはパスワードが間違っています。再入力してください',
       destination:  '/login',
       btn_value: 'ログイン'

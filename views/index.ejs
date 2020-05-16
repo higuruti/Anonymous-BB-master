@@ -11,10 +11,10 @@
             <% for(var i in content){ %>
                 <% var obj = content[i].attributes; %>
                 <li><%= obj.message %></li>
-                <% } %>
-            </ul>
+            <% } %>
+        </ul>
             <form name="myform">
-                <input name="text" type="text">
+                <input id="text" type="text">
                 <button name="btn">送信</button>
             </form>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
@@ -23,11 +23,12 @@
             var socket = io();
             var message = document.getElementById('message');
             var form = document.forms.myform;
-
+            
             form.btn.addEventListener('click', function(e){
+                var send_message = document.getElementById('text').value;
+                document.getElementById('text').value='';
                 e.preventDefault();
-                socket.emit('chat', form.text.value);
-                form.text.value='';
+                socket.emit('chat', {msg: send_message});
             });
 
             socket.on('chat', function(msg){

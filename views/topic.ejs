@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link type="text/css" href="./style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div><%= error %></div>
+        <ul id="topic">
+            <% for(var i in content){ %>
+                <% var obj = content[i].attributes; %>
+                <li><%= obj.topic %></li>
+            <% } %>
+        </ul>
+        <form method="post" action="/topic">
+           <input type="text" name="topic" placeholder="トピック選択"> 
+        </form>
+    </body>
+</html>
