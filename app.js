@@ -18,7 +18,7 @@ const session = require('express-session');
 const { check, validationResult} = require('express-validator');
 // SQL文を解析するためのモジュールとその設定をしている
 const knex = require('knex')({
-  dialect: 'mysql',
+  client: 'mysql',
   connection: {
     host: 'localhost',
     user: 'root',
