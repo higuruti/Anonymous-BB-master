@@ -1,24 +1,21 @@
-
-/* ---------------------
-        index.ejs
------------------------- */
-
-
 body {
     display: grid;
-    grid-template-rows: 10vh 75vh 10vh;
+    grid-template-rows: 60px 75vh 10vh;
     grid-template-columns: 1fr;
 }
 h1 {
     grid-row: 1;
     margin: 0;
+    height: 60px;
+    overflow-x: scroll;
+    white-space: nowrap;
 }
 #message {
     grid-row: 2;
     height: 70vh;
     overflow: hidden;
     overflow-y: scroll;
-    margin: 0;
+    margin: 5px;
     padding: 0;
     border: 3px dashed greenyellow;
     border-radius: 20px 20px 20px 20px;
@@ -54,7 +51,7 @@ form[name="myform"] {
     display: flex;
     margin: 0 50px;
     min-width: 50vw;
-    height: 40px;
+    height: 50px;
     border: 1px solid gray;
     border-radius: 5px;
 }
