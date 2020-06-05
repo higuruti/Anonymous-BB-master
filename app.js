@@ -27,6 +27,12 @@ const knex = require('knex')({
     charset: 'utf8'
   }
 });
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'chat'
+})
 // 上記で設定したデータベースのテーブルをモデル化
 // Bookshelfを使うためには必要。
 const Bookshelf = require('bookshelf')(knex);
@@ -228,6 +234,53 @@ app.post('/login', function(request, response){
     };
     response.render('login.ejs', data);
   });
+});
+
+// -------------------トピックの作成処理----------------------------
+app.get('/make_topic', function(request, response){
+  if(request.session.login==null){
+    response.redirect('login.ejs');
+  }else{
+    let data = {
+      title:'ようこそ'+request.session.login.name+'さん',
+      error:''
+    };
+    response.render('make_topic.ejs', data);
+  }
+});
+
+app.post('/make_topic', function(request, response){
+  if(request.session.login==null){
+    response.redirect('login.ejs');
+  }else{
+    Topic.query({where:{topic:request.body.topic_name}}).fetch().then((model)=>{
+      let data = {
+        title:'ようこそ'+request.session.login.name+'さん',
+        error:'そのトピックは既に存在しています'
+      };
+      response.render('make_topic.ejs', data);
+    }).catch((err)=>{
+      // knex.schema.createTable(topic, function(table){
+        //   table.increments('id').primary();
+        //   table.string('message');
+        // });
+        // new Topic(request.body).save().then((model)=>{
+          //   response.redirect('/chat?topic='+topic);
+          // });
+          
+      let topic = request.body.topic_name;
+      db.connect(function(err){
+        if(err) throw err;
+        let sql='CREATE TABLE '+topic+' (id INT AUTO_INCREMENT PRIMARY KEY, message VARCHAR(255))';
+        db.query(sql, function(err, result){
+          if(err) throw err;
+          new Topic({topic: request.body.topic_name}).save().then((model)=>{
+            response.redirect('/chat?topic='+topic);
+          })
+        });
+      });
+    });
+  }
 });
 
 // ポート番号3000で待ち状態------------------------
