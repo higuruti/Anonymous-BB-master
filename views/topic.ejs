@@ -7,14 +7,15 @@
     <body>
         <div><%= error %></div>
 
-        <form method="post" action="/topic">
+        <form method="post" action="/topic" id="chooseTopics">
             <% for(var i in content){ %>
                 <% var obj = content[i].attributes; %>
                 <input type="radio" id="topic<%= i %>" name="topic" value="<%= obj.topic %>">
                 <label for="topic<%= i %>"><%= obj.topic %></label>
             <% } %>
-            <input type="submit" value="選択">
+            <input type="submit" value="選択" id="submitBtn" disabled>
         </form>
-        <a href="/make_topic">トピックを作成する</a>
+        <a href="/make_topic" id="topiclink">トピックを作成する</a>
+        <script src="./topic.js"></script>
     </body>
 </html>

@@ -35,4 +35,16 @@ input[type="submit"] {
     border: 1px solid khaki;
     border-radius: 10px;
     cursor: pointer;
+    outline: none;
+}
+input[type="submit"]:disabled {
+    background-color: #faf7db;
+}
+#topiclink {
+    margin: auto;
+    color: #628395;
+    text-decoration: none;
+}
+#topiclink:hover {
+    text-decoration: underline;
 }

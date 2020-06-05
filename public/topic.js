@@ -1,0 +1,6 @@
+let radioButtonElements = document.forms.chooseTopics.elements;
+for (let i = 0; i < radioButtonElements.length - 1; i++) {
+    radioButtonElements.topic[i].addEventListener("click", () => {
+        radioButtonElements.submitBtn.disabled = 0;
+    });
+}
