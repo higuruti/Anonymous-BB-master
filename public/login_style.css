@@ -10,14 +10,21 @@
     border: 2px solid darkslategray;
     border-radius: 3px;
 }
+p {
+    margin: 30px auto 15px;
+    display: inline-block;
+    width: 380px;
+
+}
 a[href="/new"]{
-    margin: 10px auto;
+    margin: 5px 0 30px 20px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    color: slateblue;
+    color: #3d5a6c;
     cursor: pointer;
     text-decoration: none;
+    align-self: start;
 }
 a:hover{
     text-decoration: underline;
@@ -32,17 +39,17 @@ input[type="text"], input[type="password"] {
     width: -moz-available;
     width: -webkit-fill-available;
     border-radius: 3px;
-    color: slateblue;
+    color: #77966d;
     background-color: #f7f7f7;
     border: 1px solid gray;
     transition: border-color .2s ease-in-out;
 }
 input[type="text"]:focus, input[type="password"]:focus {
-    border-color: blueviolet;
+    border-color: yellowgreen;
 }
 input[type="submit"] {
     display: inline-block;
-    margin: 15px 15px 30px 15px;
+    margin: 15px 15px 0 15px;
     padding: 8px 15px;
     max-width: 450px;
     width: -moz-available;
@@ -50,13 +57,13 @@ input[type="submit"] {
     text-decoration: none;
     font-weight: bold;
     color: white;
-    background-color: blueviolet;
-    border: 1px solid blueviolet;
+    background-color: yellowgreen;
+    border: 1px solid yellowgreen;
     border-radius: 4px;
     transition: .2s;
 }
 input[type="submit"]:hover {
-    background-color: blueviolet;
+    background-color: yellowgreen;
     color: white;
     box-shadow: 0 2px 0 rgba(0, 0, 0, .15);
 }

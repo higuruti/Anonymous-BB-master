@@ -2,14 +2,16 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <link href="./make_topic_style.css" rel="stylesheet">
     </head>
     <body>
         <p><%= title %></p>
         <p><%= error %></p>
-        <form method="post" actin="/make_topic">
+        <form method="post" actin="/make_topic" id="topicform">
             <p>トピック名を入力してください</p>
             <input type="text" placeholder="トピック名" name="topic_name">
-            <input type="submit" value="作成">
+            <input type="submit" value="作成" name="submitBtn" disabled>
         </form>
+    <script src="./makeTopic.js"></script>
     </body>
 </html>
