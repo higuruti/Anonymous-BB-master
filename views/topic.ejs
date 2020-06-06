@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link type="text/css" href="./topic_style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div><%= error %></div>
+
+        <form method="post" action="/topic">
+            <% for(var i in content){ %>
+                <% var obj = content[i].attributes; %>
+                <input type="radio" id="topic<%= i %>" name="topic" value="<%= obj.topic %>">
+                <label for="topic<%= i %>"><%= obj.topic %></label>
+            <% } %>
+            <input type="submit" value="選択">
+        </form>
+        <a href="/make_topic">トピックを作成する</a>
+    </body>
+</html>

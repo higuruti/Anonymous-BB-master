@@ -2,40 +2,59 @@
 <html lang="ja">
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+        <!-- <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css"> -->
+        <link type="text/css" href="./main_style.css" rel="stylesheet">
     </head>
     <body>
         <h1><%= title %></h1>
-        <hr>
+        <!-- <hr> -->
         <ul id="message">
             <% for(var i in content){ %>
                 <% var obj = content[i].attributes; %>
-                <li><%= obj.message %></li>
-                <% } %>
-            </ul>
-            <form name="myform">
-                <input name="text" type="text">
-                <button name="btn">送信</button>
-            </form>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+                <li><%- obj.message.replace(/\n\r/g, '<br>') %></li>
+            <% } %>
+        </ul>
+        <form name="myform">
+            <textarea name="text" id="text" type="text"></textarea>
+            <button name="btn" disabled>送信</button>
+        </form>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
         <script>
             // クライアントからサーバへ接続要求
             var socket = io();
             var message = document.getElementById('message');
             var form = document.forms.myform;
-
+            
             form.btn.addEventListener('click', function(e){
+                var send_message = document.getElementById('text').value;
+                console.log(send_message)
                 e.preventDefault();
-                socket.emit('chat', form.text.value);
+                socket.emit('chat', send_message);
                 form.text.value='';
+                form.btn.disabled = 1;
             });
 
             socket.on('chat', function(msg){
                 var li = document.createElement('li');
-
-                li.textContent = msg;
+                
+                message_content = msg.replace(/\n\r/g, '\n');
+                message_content = msg.replace(/\r/g, '\n');
+                li.innerHTML = message_content.split('\n').join('<br>');
                 message.appendChild(li);
+
+                // reload
+                messageBox = document.getElementById("message");
+                messageLists = messageBox.getElementsByTagName("li");
+                lastMessage = messageLists[messageLists.length - 1];
+                lastMessageY += lastMessage.clientHeight;
+
+                // new message scroll
+                if (textareaElement.getBoundingClientRect().top > lastMessage.getBoundingClientRect().top) {
+                    let scrollPadding = lastMessage.clientHeight + 10; //この10は微調整。多分メッセージ上下の空白
+                    messageBox.scrollBy({left: 0, top: scrollPadding, behavior: "smooth"});
+                }
             });
         </script>
+        <script src="./common.js"></script>
     </body>
 </html>

@@ -1,0 +1,38 @@
+html {
+    text-align: center;
+}
+body {
+    display: inline-block;
+    text-align: center;
+}
+form {
+    display: flex;
+    flex-flow: column wrap;
+}
+form > * {
+    margin: 5px;
+}
+form > input[name="topic"] {
+    display: none;
+}
+form > label {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid rgb(163, 179, 163);
+    background-color: lightgray;
+    color: dimgray;
+    transition: .2s;
+}
+form > input:checked + label {
+    background-color: yellowgreen;
+    color: white;
+}
+input[type="submit"] {
+    padding: 10px;
+    margin: 20px 5px 5px 5px;
+    font-weight: bold;
+    background-color: khaki;
+    border: 1px solid khaki;
+    border-radius: 10px;
+    cursor: pointer;
+}

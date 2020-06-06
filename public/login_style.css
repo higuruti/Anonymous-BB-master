@@ -1,0 +1,62 @@
+#pageContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    align-items: center;
+    max-width: 480px;
+    margin: 0 auto;
+    background-color: #e3e3e3;
+    border: 2px solid darkslategray;
+    border-radius: 3px;
+}
+a[href="/new"]{
+    margin: 10px auto;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: slateblue;
+    cursor: pointer;
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: underline;
+}
+input[type="text"], input[type="password"] {
+    margin: 15px;
+    padding: 10px;
+    height: 40px;
+    font-size: 16px;
+    box-sizing: border-box;
+    max-width: 450px;
+    width: -moz-available;
+    width: -webkit-fill-available;
+    border-radius: 3px;
+    color: slateblue;
+    background-color: #f7f7f7;
+    border: 1px solid gray;
+    transition: border-color .2s ease-in-out;
+}
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: blueviolet;
+}
+input[type="submit"] {
+    display: inline-block;
+    margin: 15px 15px 30px 15px;
+    padding: 8px 15px;
+    max-width: 450px;
+    width: -moz-available;
+    width: -webkit-fill-available;
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    background-color: blueviolet;
+    border: 1px solid blueviolet;
+    border-radius: 4px;
+    transition: .2s;
+}
+input[type="submit"]:hover {
+    background-color: blueviolet;
+    color: white;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, .15);
+}
