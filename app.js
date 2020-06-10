@@ -262,7 +262,7 @@ app.post('/make_topic', function(request, response){
       let topic = request.body.topic_name;
       db.connect(function(err){
         if(err) throw err;
-        let sql='CREATE TABLE '+topic+' (id INT AUTO_INCREMENT PRIMARY KEY, message VARCHAR(255))';
+        let sql='CREATE TABLE '+topic+' (id INT AUTO_INCREMENT PRIMARY KEY, message VARCHAR(255), user VARCHAR(30))';
         db.query(sql, function(err, result){
           if(err) throw err;
           new Topic({topic: request.body.topic_name}).save().then((model)=>{
