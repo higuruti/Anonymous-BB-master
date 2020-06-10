@@ -1,4 +1,4 @@
-// 必要なモジュールを取り込んでいる
+
 const express = require('express');
 // expressのインスタンス化
 const app = express();
@@ -39,9 +39,7 @@ const Bookshelf = require('bookshelf')(knex);
 const Users = Bookshelf.Model.extend({
   tableName: 'users'
 });
-// const Message = Bookshelf.Model.extend({
-//   tableName:  'chat_contents',
-// });
+
 const Topic = Bookshelf.Model.extend({
   tableName: 'topic',
 });
@@ -68,7 +66,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('public'));
 
 // ---------------メッセージ--------------------
-// urlが/で、メソッドがgetの時の動き
+// urlが/chatで、メソッドがgetの時の動き
 app.get('/chat', function(request, response){
   // ログインしていなかった場合ログイン画面に飛ばす
   if(request.session.login == null){
@@ -88,7 +86,7 @@ app.get('/chat', function(request, response){
         content: collection.toArray()
       };
       response.render('index.ejs', data);  
-    }).catch((err)=>{
+    }).catch(function(err){
       response.status(500).json({error: true, data: {message: err.message}});
     });
   }
@@ -100,13 +98,14 @@ io.sockets.on('connection', function(socket){
   let room= socket.request.session.room;
   socket.join(room);
   socket.on('chat', function(data){
+    let user=socket.request.session.login.name;
     const Message = Bookshelf.Model.extend({
       tableName: room
     });
     // 送信されたメッセージをデータベースに追加
-    new Message({message: data}).save().then((model)=>{
+    new Message({message: data, user: user}).save().then((model)=>{
       // ほかのつながってるユーザーにメッセージを送信
-      io.sockets.in(room).emit('chat',data);
+      io.sockets.in(room).emit('chat',{message: data, user: user});
     });
   });
 });
@@ -143,9 +142,9 @@ app.post('/topic', [
     let topic = request.body.topic;
     Topic.query({where: {topic: topic}})
     .fetch()
-    .then((model)=>{
+    .then(function(model){
       response.redirect('/chat?topic='+topic);
-    }).catch((err)=>{
+    }).catch(function(err){
       new Topic().fetchAll().then((collection)=>{
         let data = {
           error: 'そのようなトピックは存在しません',
@@ -217,7 +216,7 @@ app.post('/login', function(request, response){
   let password = request.body.password;
 
   // データベースに接続して送られてきたアカウントが存在するか調べる
-  Users.query({where: {name: userName}, andWhere: {password: password}}).fetch().then((model)=>{
+  Users.query({where: {name: userName}, andWhere: {password: password}}).fetch().then(function(model){
   
     // 存在した場合、セッション管理をしている変数にユーザーのデータを入れてる。
       // ここら辺もう少し調べとく
@@ -226,7 +225,7 @@ app.post('/login', function(request, response){
       console.log(userName+' is login');
       // /でリダイレクト　チャット画面に移行
       response.redirect('/topic');
-  }).catch((err)=>{
+  }).catch(function(err){
     let data = {
       title: 'ログイン名もしくはパスワードが間違っています。再入力してください',
       destination:  '/login',
@@ -260,14 +259,6 @@ app.post('/make_topic', function(request, response){
       };
       response.render('make_topic.ejs', data);
     }).catch((err)=>{
-      // knex.schema.createTable(topic, function(table){
-        //   table.increments('id').primary();
-        //   table.string('message');
-        // });
-        // new Topic(request.body).save().then((model)=>{
-          //   response.redirect('/chat?topic='+topic);
-          // });
-          
       let topic = request.body.topic_name;
       db.connect(function(err){
         if(err) throw err;
@@ -284,5 +275,5 @@ app.post('/make_topic', function(request, response){
 });
 
 // ポート番号3000で待ち状態------------------------
-server.listen(3000, ()=>{console.log('Server is start on port 3000')});
+server.listen(3000, function(){console.log('Server is start on port 3000')});
 

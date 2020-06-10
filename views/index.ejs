@@ -11,7 +11,7 @@
         <ul id="message">
             <% for(var i in content){ %>
                 <% var obj = content[i].attributes; %>
-                <li><%- obj.message.replace(/\n\r/g, '<br>') %></li>
+                <li><%- obj.user %><br/><%- obj.message.replace(/\n\r/g, '<br>') %></li>
             <% } %>
         </ul>
         <form name="myform">
@@ -37,9 +37,10 @@
             socket.on('chat', function(msg){
                 var li = document.createElement('li');
                 
-                message_content = msg.replace(/\n\r/g, '\n');
-                message_content = msg.replace(/\r/g, '\n');
-                li.innerHTML = message_content.split('\n').join('<br>');
+                message_content = msg.message.replace(/\n\r/g, '\n');
+                message_content = msg.message.replace(/\r/g, '\n');
+                message_user=msg.user;
+                li.innerHTML = message_user+'<br/>'+message_content.split('\n').join('<br>');
                 message.appendChild(li);
 
                 // reload
