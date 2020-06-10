@@ -11,12 +11,15 @@
         <ul id="message">
             <% for(var i in content){ %>
                 <% var obj = content[i].attributes; %>
-                <li><%- obj.user %><br/><%- obj.message.replace(/\n\r/g, '<br>') %></li>
+                <li>name：<%- obj.user %><br/>message：<%- obj.message.replace(/\n\r/g, '<br>') %></li>
             <% } %>
         </ul>
         <form name="myform">
             <textarea name="text" id="text" type="text"></textarea>
             <button name="btn" disabled>送信</button>
+        </form>
+        <form method="get" action="/topic">
+            <input type="submit" value="退出">
         </form>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
         <script>
@@ -40,7 +43,7 @@
                 message_content = msg.message.replace(/\n\r/g, '\n');
                 message_content = msg.message.replace(/\r/g, '\n');
                 message_user=msg.user;
-                li.innerHTML = message_user+'<br/>'+message_content.split('\n').join('<br>');
+                li.innerHTML = 'name：'+message_user+'<br/>message：'+message_content.split('\n').join('<br>');
                 message.appendChild(li);
 
                 // reload
