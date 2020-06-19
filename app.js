@@ -92,6 +92,17 @@ app.get('/chat', function(request, response){
   }
 });
 
+//---------------電卓-----------------------------------------
+
+app.get('/calclation', function(request, response){
+  if(request.session.login==null){
+    response.redirect('login');
+  }else{
+    data={}
+    response.render('calclation.ejs',data);
+  }
+})
+
 // -----------------websocket での通信の処理-------------------
 
 io.sockets.on('connection', function(socket){
